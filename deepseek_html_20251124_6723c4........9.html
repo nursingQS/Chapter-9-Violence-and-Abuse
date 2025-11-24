@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violence and Abuse Flashcards</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4a235a 0%, #6c3483 100%);
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            height: 95vh;
+            max-height: 95vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4a235a, #6c3483);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><path d="M30,30 Q50,10 70,30 T90,50 T70,70 T50,90 T30,70 T10,50 T30,30 Z" fill="white"/></svg>');
+        }
+        
+        .header h1 {
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .header .subtitle {
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .progress {
+            background: #2c1b3b;
+            height: 8px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #4a235a, #6c3483);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .flashcard {
+            padding: clamp(10px, 3vw, 20px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+        
+        .question-container {
+            display: flex;
+            gap: clamp(10px, 2vw, 15px);
+            align-items: flex-start;
+            margin-bottom: clamp(10px, 2vw, 15px);
+        }
+        
+        .question-icon {
+            background: #4a235a;
+            color: white;
+            width: clamp(35px, 8vw, 50px);
+            height: clamp(35px, 8vw, 50px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(74, 35, 90, 0.3);
+        }
+        
+        .question {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            line-height: 1.6;
+            color: #2c3e50;
+            flex-grow: 1;
+            font-weight: 500;
+        }
+        
+        .multiple-select-indicator {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 1.5vw, 10px);
+            margin-bottom: clamp(10px, 2vw, 20px);
+            flex: 1;
+        }
+        
+        .option {
+            padding: clamp(10px, 2vw, 14px) clamp(12px, 2.5vw, 18px);
+            border: 2px solid #f0e6f6;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 1.5vw, 10px);
+            font-size: clamp(0.85rem, 2vw, 1rem);
+        }
+        
+        .option:hover {
+            background: #f8f4fc;
+            border-color: #d7bde2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .option-letter {
+            background: #f8f4fc;
+            color: #2c3e50;
+            width: clamp(24px, 5vw, 28px);
+            height: clamp(24px, 5vw, 28px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+        }
+        
+        /* CORRECT - ALWAYS GREEN */
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.correct .option-letter {
+            background: #28a745;
+            color: white;
+        }
+        
+        /* INCORRECT - ALWAYS RED */
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .option.incorrect .option-letter {
+            background: #dc3545;
+            color: white;
+        }
+        
+        /* Remove the selected class to prevent blue highlighting */
+        
+        .feedback {
+            padding: clamp(12px, 2.5vw, 16px);
+            border-radius: 12px;
+            margin-bottom: clamp(10px, 2vw, 16px);
+            display: none;
+            align-items: center;
+            gap: clamp(8px, 1.5vw, 12px);
+            font-weight: 500;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            display: flex;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            display: flex;
+        }
+        
+        .feedback-icon {
+            font-size: clamp(1.2rem, 3vw, 1.4rem);
+            flex-shrink: 0;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(12px, 2.5vw, 16px) clamp(16px, 3vw, 24px);
+            background: #f8f4fc;
+            border-top: 1px solid #f0e6f6;
+            flex-shrink: 0;
+        }
+        
+        .counter {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+        }
+        
+        .btn {
+            padding: clamp(10px, 2vw, 12px) clamp(15px, 2.5vw, 20px);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: clamp(6px, 1vw, 8px);
+            font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4a235a, #6c3483);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 35, 90, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #d7bde2, #4a235a);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(215, 189, 226, 0.3);
+        }
+        
+        .rationale {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffd43b;
+            border-radius: 12px;
+            padding: clamp(12px, 2.5vw, 16px);
+            margin-top: clamp(8px, 1.5vw, 12px);
+            display: none;
+        }
+        
+        .rationale.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        .rationale h4 {
+            color: #856404;
+            margin-bottom: clamp(6px, 1.2vw, 10px);
+            display: flex;
+            align-items: center;
+            gap: clamp(6px, 1.2vw, 8px);
+            font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+        }
+        
+        .rationale p {
+            color: #856404;
+            line-height: 1.6;
+            font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stats {
+            display: flex;
+            gap: clamp(8px, 1.5vw, 15px);
+            justify-content: center;
+            margin-top: clamp(4px, 1vw, 10px);
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: clamp(5px, 1vw, 6px) clamp(8px, 1.8vw, 12px);
+            border-radius: 20px;
+            font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+            white-space: nowrap;
+        }
+        
+        /* Cancel selection button */
+        .cancel-selection {
+            background: linear-gradient(135deg, #e74c3c, #c82333);
+            color: white;
+            margin: 0 auto clamp(10px, 2vw, 15px) auto;
+            display: none;
+        }
+        
+        .cancel-selection:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        .cancel-selection.show {
+            display: flex;
+        }
+        
+        /* Study mode controls */
+        .study-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .study-btn {
+            padding: 8px 16px;
+            border: 2px solid #4a235a;
+            background: white;
+            color: #4a235a;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .study-btn.active {
+            background: #4a235a;
+            color: white;
+        }
+        
+        .study-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 35, 90, 0.2);
+        }
+        
+        /* Multiple select instructions */
+        .multiple-select-instructions {
+            text-align: center;
+            color: #e74c3c;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Violence and Abuse</h1>
+            <div class="subtitle">Chapter 9 - 30 Questions | Multiple-Select Enabled</div>
+            <div class="stats">
+                <div class="stat">🎯 30 Questions</div>
+                <div class="stat">📖 Detailed Rationales</div>
+                <div class="stat">🔢 10 Multiple-Answer Questions</div>
+                <div class="stat">↩️ Cancel Wrong Answers</div>
+            </div>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="flashcard">
+            <div class="study-controls">
+                <button class="study-btn active" id="allQuestionsBtn" onclick="setStudyMode('all')">All Questions</button>
+                <button class="study-btn" id="multipleSelectBtn" onclick="setStudyMode('multiple')">Multiple-Select Only</button>
+                <button class="study-btn" id="singleSelectBtn" onclick="setStudyMode('single')">Single-Select Only</button>
+                <button class="study-btn" id="incorrectBtn" onclick="setStudyMode('incorrect')">Review Incorrect</button>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-icon">?</div>
+                <div class="question" id="question"></div>
+                <div class="multiple-select-indicator" id="multipleSelectIndicator" style="display: none;">Multiple Answers</div>
+            </div>
+            
+            <div class="multiple-select-instructions" id="multipleSelectInstructions" style="display: none;">
+                💡 Select ALL correct answers - This question has multiple correct options
+            </div>
+            
+            <div class="options" id="options"></div>
+            
+            <!-- Cancel Selection Button - Only shows for wrong answers -->
+            <button class="btn cancel-selection" id="cancelBtn" onclick="cancelSelection()">
+                ↩️ Cancel Selection
+            </button>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-icon" id="feedbackIcon"></div>
+                <div id="feedbackText"></div>
+            </div>
+            <div class="rationale" id="rationale">
+                <h4>💡 Rationale:</h4>
+                <p id="rationaleText"></p>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousCard()">
+                ⬅️ Previous
+            </button>
+            <div class="counter" id="counter">1/30</div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextCard()">
+                Next ➡️
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "1. The nurse is presenting a class at a local community health center on violence during pregnancy. Which possible complication would the nurse include?",
+                options: [
+                    "gestational hypertension",
+                    "chorioamnionitis",
+                    "placenta previa",
+                    "postterm labor"
+                ],
+                correct: 1,
+                rationale: "Women assaulted during pregnancy are at risk for chorioamnionitis, placental abruption, preterm labor, stillbirth, miscarriage, uterine rupture, and injuries to the mother and fetus. Gestational hypertension is not associated with violence during pregnancy."
+            },
+            {
+                question: "2. Which approach would be most appropriate when counseling a client who is a suspected victim of intimate partner violence?",
+                options: [
+                    "Offer the client a pamphlet about the local shelter for victims of intimate partner violence.",
+                    "Call the client at home to ask some questions about the marriage.",
+                    "Wait until the client comes in a few more times to make a better assessment.",
+                    "Ask, \"Have you ever been physically hurt by your partner?\""
+                ],
+                correct: 3,
+                rationale: "If intimate partner violence is suspected, the nurse must use direct or indirect questions to screen for abuse. Asking the client if he or she has ever been physically hurt by the partner is most appropriate. Offering the client a pamphlet, calling the client at home, or waiting until the client returns are inappropriate and do not validate the suspicion."
+            },
+            {
+                question: "3. When describing an episode of intimate partner violence, the victim reports attempting to calm the partner down to keep things from escalating. The nurse interprets this behavior as reflecting which phase of the cycle of violence?",
+                options: [
+                    "battering",
+                    "honeymoon",
+                    "tension-building",
+                    "reconciliation"
+                ],
+                correct: 2,
+                rationale: "During the first phase of intimate partner violence, tension-building, the victim attempts to keep the situation from exploding based on the belief that the partner's anger is legitimately directed at him or her. The battering phase involves the explosion of violence. The honeymoon or reconciliation phase is manifested by a period of calm, loving, contrite behavior on the part of the batterer. The batterer may be genuinely sorry for the pain caused."
+            },
+            {
+                question: "4. A physically abused pregnant woman reports to the nurse that her spouse has stopped hitting her and promises never to hurt her again. Which response by the nurse would be most appropriate?",
+                options: [
+                    "\"That's great. I wish you both the best.\"",
+                    "\"Remember, the cycle of violence often repeats itself.\"",
+                    "\"He probably didn't mean to hurt you.\"",
+                    "\"You need to consider leaving him.\""
+                ],
+                correct: 1,
+                rationale: "The cycle of violence typically increases in frequency and severity as it is repeated over and over again. The woman needs to understand this."
+            },
+            {
+                question: "5. A nurse is developing a plan of care for a victim of intimate partner violence. Which intervention would be least appropriate for the nurse to include?",
+                options: [
+                    "assisting the client to project anger",
+                    "providing information about a safe home and crisis line",
+                    "teaching the client about the cycle of violence",
+                    "discussing the client's legal and personal rights"
+                ],
+                correct: 0,
+                rationale: "The goal of intervention is to enable the victim to gain control by providing sensitive, predictable care in an accepting setting. Assisting the client to project anger would not be helpful when the client needs support and education."
+            },
+            {
+                question: "6. A nurse is describing the cycle of violence to a community group. When explaining the first phase, the nurse would include which description?",
+                options: [
+                    "somehow triggered by the victim's behavior",
+                    "characterized by tension-building and minor battery",
+                    "associated with loss of physical and emotional control",
+                    "like a honeymoon that lulls the victim"
+                ],
+                correct: 1,
+                rationale: "The cyclic behavior begins with a time of tension-building arguments, progresses to violence, and settles into a making-up or calm period."
+            },
+            {
+                question: "7. A nurse is working with a victim of violence. Which statement would be most appropriate to empower the victim to take action?",
+                options: [
+                    "\"Give your partner more time to come around.\"",
+                    "\"Remember—children do best in two-parent families.\"",
+                    "\"Change your behavior so as not to trigger the violence.\"",
+                    "\"You are a good person, and you deserve better than this.\""
+                ],
+                correct: 3,
+                rationale: "To help the victim gain control over his or her life, the nurse should emphasize that violence is never okay and that the victim did not deserve the violent attack or ask for it. Telling the victim to give the partner more time, saying that children need two parents, and suggesting that the client change his or her behavior do not promote control, rather they attempt to excuse the partner's behavior."
+            },
+            {
+                question: "8. When a nurse suspects that a client may be a victim of intimate partner violence, the first action should be to:",
+                options: [
+                    "ask the client about the injuries and if they are related to intimate partner violence.",
+                    "encourage the client to leave the abuser immediately.",
+                    "set up an appointment with an intimate partner violence counselor.",
+                    "ask the suspected abuser about the victim's injuries."
+                ],
+                correct: 0,
+                rationale: "The first step is to screen for intimate partner violence and identify the connection between the client's injuries and that abuse. Once intimate partner violence is detected, the nurse should immediately isolate the client to provide privacy and prevent retaliation by the abuser. Encouraging the client to leave the abuser immediately is not realistic. Setting up an appointment with a counselor would be appropriate once intimate partner violence is detected and the client is safe. Questioning the suspected abuser might worsen the situation."
+            },
+            {
+                question: "9. A nurse is listening to a client who is a victim of intimate partner violence. The client is describing how events would unfold with the partner. The nurse interprets the client's statements and identifies which action as characteristic of the second phase of the cycle of violence?",
+                options: [
+                    "The batterer is contrite and attempts to apologize for the behavior.",
+                    "The physical battery is abrupt and unpredictable.",
+                    "Verbal assaults begin to escalate toward the victim.",
+                    "The victim accepts the anger as legitimately directed at him or her."
+                ],
+                correct: 1,
+                rationale: "During the second phase of the cycle of violence, the violence explodes and the batterer loses control physically and emotionally. During the honeymoon or third phase, the batterer is contrite and attempts to apologize for the behavior. During the first phase or tension building phase, verbal or minor battery occurs and the victim often accepts the partner's building anger as legitimately directed toward him or her."
+            },
+            {
+                question: "10. In addition to providing privacy, which action would be most appropriate initially in situations involving suspected intimate partner violence?",
+                options: [
+                    "Allow the client to have a good cry over the situation.",
+                    "Tell the client, \"Injuries like these don't usually happen by accident.\"",
+                    "Call the police immediately so they can question the victim.",
+                    "Ask the abuser to describe his side of the story first."
+                ],
+                correct: 1,
+                rationale: "Communicating support through a nonjudgmental attitude and telling the victim that no one deserves to be abused are the first steps in establishing trust and rapport. Allowing the client to cry is appropriate after the client is safe, the client's privacy is protected, and the nurse has emphasized that there is a problem. Notifying the police is done once the assessment reveals suspicion or actual indications of intimate partner violence. Asking the abuser to describe the story is inappropriate because asking the abuser about the situation may trigger an abusive episode."
+            },
+            {
+                question: "11. When the nurse is alone with a client, the client says, \"It was all my fault. The house was so messy when my partner got home, and I know my partner hates that.\" Which response would be most appropriate?",
+                options: [
+                    "\"It is not your fault. No one deserves to be hurt.\"",
+                    "\"What else did you do to make your partner so angry with you?\"",
+                    "\"You need to start to clean the house early in the day.\"",
+                    "\"Remember, your partner works hard and you need to meet your partner's needs.\""
+                ],
+                correct: 0,
+                rationale: "The nurse needs to communicate nonjudgmental support and explain that no one deserves to be abused. Doing so helps to establish trust and rapport. Asking the victim what he or she did to make the partner so angry, telling the victim to clean the house earlier in the day, and telling the victim to meet the partner's needs all shift the blame to the victim and are thus inappropriate."
+            },
+            {
+                question: "12. When developing a presentation for a local community organization on violence, the nurse is planning to include statistics on intimate partner violence and its effects on children. When addressing these statistics, what is the rate of the cases involving a parent and the children being abused?",
+                options: [
+                    "1 in 8",
+                    "1 in 3",
+                    "1 in 5",
+                    "1 in 10"
+                ],
+                correct: 0,
+                rationale: "In many cases when a parent is abused, the children are abused as well. Approximately 1 in 8 children are abused annually in the United States."
+            },
+            {
+                question: "13. A nurse is working with a group of clients who are victims of intimate partner violence. The nurse focuses interventions on which area as the primary goal?",
+                options: [
+                    "convincing them to leave the abuser soon",
+                    "helping them cope with their life as it is",
+                    "empowering them to regain control of their life",
+                    "arresting the abuser so he or she cannot abuse again"
+                ],
+                correct: 2,
+                rationale: "The goal of interventions is to enable the victim to gain control over life. Although the nurse can encourage a victim to leave an abuser, the choice to leave must be made by the victim. The nurse can provide support and assistance with coping, but the ultimate goal is for the victim to become empowered. Arresting the abuser does not necessarily stop the abuse."
+            },
+            {
+                question: "14. A nurse is preparing a teaching plan for victims who are recovering from intimate partner violence. The nurse would focus the teaching on ways to:",
+                options: [
+                    "enhance their personal appearance and hairstyle.",
+                    "develop their creativity and work ethic.",
+                    "improve their communication skills and assertiveness.",
+                    "plan more nutritious meals to improve their own health."
+                ],
+                correct: 2,
+                rationale: "Providing reassurance and support to victims of intimate partner violence is key if the violence is to end. Appropriate actions can help victims express their thoughts and feelings in constructive ways and strengthen their control over their lives. Although interventions related to personal appearance and creativity can enhance the victim's self-esteem, they are not helpful in dealing with intimate partner violence. Planning nutritious meals helps to promote a healthy lifestyle but is ineffective in dealing with intimate partner violence."
+            },
+            {
+                question: "15. During a follow-up visit to the clinic, a victim of sexual assault reports changing jobs and moving to another town. The client tells the nurse, \"I pretty much stay to myself at work and at home.\" The nurse interprets these findings to indicate that the client is in which phase of rape recovery?",
+                options: [
+                    "disorganization",
+                    "denial",
+                    "reorganization",
+                    "integration"
+                ],
+                correct: 2,
+                rationale: "During the reorganization phase, the survivor attempts to make life adjustments by moving or changing jobs and uses emotional distancing to cope. The disorganization phase is characterized by shock, fear, disbelief, anger, shame, guilt, and feelings of uncleanliness. During the denial or outward adjustment phase, the survivor appears outwardly composed and returns to work or school and refuses to discuss the assault and denies the need for counseling. During the integration and recovery phase, the survivor begins to feel safe and starts to trust others."
+            },
+            {
+                question: "16. A nurse is assessing a rape survivor for posttraumatic stress disorder. The nurse asks the survivor, \"Do you feel as though you are reliving the trauma?\" The nurse is assessing for which effect of the trauma?",
+                options: [
+                    "physical symptoms",
+                    "intrusive thoughts",
+                    "avoidance",
+                    "hyperarousal"
+                ],
+                correct: 1,
+                rationale: "The question is used to assess the survivor for intrusive thoughts that reflect the client reexperiencing the trauma. Physical symptoms would be assessed with questions about sleeping, eating, palpitations and other problems. Avoidance would be reflected in questions involving withdrawal socially, avoiding situations that remind the survivor of the rape. Hyperarousal would be noted by irritability and an exaggerated startle response."
+            },
+            {
+                question: "17. A group of nurses are preparing a program about rape and sexual assault for a community health center. Which information would the nurses include as being most accurate? Select all that apply.",
+                options: [
+                    "Most victims of rape tell someone about it.",
+                    "Few people falsely cry \"rape.\"",
+                    "Women have rape fantasies desiring to be raped.",
+                    "A rape victim feels vulnerable and betrayed afterwards.",
+                    "Medication and counseling can help a rape victim cope."
+                ],
+                correct: [1, 3, 4],
+                rationale: "The majority of victims never tell anyone about a rape. Almost two-thirds of victims never report it to the police. The victim feels vulnerable, betrayed, and insecure after a rape. Few women falsely cry \"rape.\" Reality and fantasy are different, and dreams have nothing to do with the brutal violation of rape. Medication can help initially, but counseling is usually needed."
+            },
+            {
+                question: "18. After teaching a class at a local college campus on date rape, the nurse determines that the teaching was successful when the class identifies which substance as the most common date rape drug?",
+                options: [
+                    "gamma hydroxybutyrate",
+                    "liquid ecstasy",
+                    "ketamine",
+                    "rohypnol"
+                ],
+                correct: 3,
+                rationale: "Rohypnol is the most common date rape drug. Others include gamma hydroxybutyrate (or liquid ecstasy) and ketamine."
+            },
+            {
+                question: "19. A nurse is caring for a recent rape victim. The nurse would expect this client to experience which phase first?",
+                options: [
+                    "denial",
+                    "disorganization",
+                    "reorganization",
+                    "integration"
+                ],
+                correct: 1,
+                rationale: "The acute phase of rape recovery is disorganization characterized by shock, fear, disbelief, anger, shame, guilt and feelings of uncleanliness. This is followed by denial (outward adjustment), reorganization, and finally integration and recovery."
+            },
+            {
+                question: "20. A group of nurses is preparing a violence prevention program. The group is researching information about risk factors for intimate partner violence related to the individual. Based on their research, which risk factors would the nurses expect to address? Select all that apply.",
+                options: [
+                    "dysfunctional family system",
+                    "low academic achievement",
+                    "victim of childhood violence",
+                    "heavy alcohol consumption",
+                    "economic stress"
+                ],
+                correct: [1, 2, 3],
+                rationale: "Individual risk factors associated with intimate partner violence include young age, heavy drinking, low academic achievement, and experience of or witnessing of violence as a child. Dysfunctional family system and economic stress are risk factors associated with the relationship."
+            },
+            {
+                question: "21. A nurse is working with a victim of intimate partner violence, helping the client develop a safety plan. Which items would the nurse suggest that the client take when leaving? Select all that apply.",
+                options: [
+                    "driver's license",
+                    "Social Security number",
+                    "cash",
+                    "phone cards",
+                    "health insurance cards"
+                ],
+                correct: [0, 1, 2, 4],
+                rationale: "When leaving an abusive relationship, the victim should take a driver's license or photo ID, Social Security number or green card/work permit, birth certificates, any court papers or orders, credit cards, cash, and health insurance cards. The victim should avoid phone cards because they leave a trail to follow."
+            },
+            {
+                question: "22. A nurse is presenting a discussion on sexual violence at a local community college. When describing the incidence of sexual violence, the nurse would identify that a woman has which chance of experiencing a sexual assault in her lifetime?",
+                options: [
+                    "1 in 3",
+                    "1 in 5",
+                    "2 in 15",
+                    "3 in 20"
+                ],
+                correct: 1,
+                rationale: "According to the National Sexual Violence Resource Center (NSVRC), nearly one in five women and one in 9 men in the United States have experienced rape, physical violence, and/or stalking by a partner with IPV-related impact in their lifetimes."
+            },
+            {
+                question: "23. A nurse is reading a journal article about sexual abuse. Which age range would the nurse expect to find as the peak age for such abuse?",
+                options: [
+                    "7 to 10 years",
+                    "8 to 12 years",
+                    "14 to 18 years",
+                    "18 to 22 years"
+                ],
+                correct: 1,
+                rationale: "Current estimates indicate that 1 of 5 girls is sexually assaulted, and the peak ages of such abuse are from 8 to 12 years of age. At every age in the life span, females are more likely to be victims of sexual violence by father, brother, family member, neighbor, boyfriend, husband, partner or ex-partner than by a stranger or anonymous assailant."
+            },
+            {
+                question: "24. A nurse is conducting an in-service program on sexual abuse and violence for a group of nurses working at the community clinic. After teaching the group, the nurse determines that the teaching was successful when the group describes incest as involving which action?",
+                options: [
+                    "sexual exploitation by blood or surrogate relatives",
+                    "sexual abuse of individuals over age 18",
+                    "violent aggressive assault on a person",
+                    "consent between perpetrator and victim."
+                ],
+                correct: 0,
+                rationale: "Incest is any type of sexual exploitation between blood relatives or surrogate relatives before the victim reaches 18 years of age. Rape is a violent, aggressive assault on the victim's body and integrity. Rape is a legal rather than a medical term. It denotes penile penetration of the vagina, mouth, or rectum of the female or male without consent. It may or may not include the use of a weapon."
+            },
+            {
+                question: "25. A nurse is teaching a group of college students about rape and sexual assault. The nurse determines that additional teaching is necessary based on which statements by the group? Select all that apply.",
+                options: [
+                    "Most victims of rape tell someone about it.",
+                    "Few individuals falsely cry \"rape.\"",
+                    "Women have rape fantasies desiring to be raped.",
+                    "A rape victim feels vulnerable and betrayed afterwards.",
+                    "Medication and counseling can help a rape victim cope."
+                ],
+                correct: [0, 2],
+                rationale: "The majority of victims never tell anyone about a rape. Almost two-thirds of victims never report it to the police. The victim feels vulnerable, betrayed, and insecure after a rape. Few individuals falsely cry \"rape.\" Reality and fantasy are different, and dreams have nothing to do with the brutal violation of rape. Medication can help initially, but counseling is usually needed."
+            },
+            {
+                question: "26. While obtaining a history from a woman at a regularly scheduled physical, the nurse notices various bruises on the client's upper extremity. The client dismisses the bruising and changes the subject. Which additional information about the woman as a victim would the nurse discuss with the healthcare provider when relaying the physical assessment data? Select all that apply.",
+                options: [
+                    "A dysfunctional family system",
+                    "A low academic achievement",
+                    "A victim of childhood violence",
+                    "Limited alcohol consumption",
+                    "Economic stress"
+                ],
+                correct: [0, 1, 2, 4],
+                rationale: "Victims often will not describe themselves as abused. In battered woman syndrome, the woman has experienced deliberate and repeated physical or sexual assault by an intimate partner over an extended period of time. She is terrified and feels trapped, helpless, and alone. She reacts to any expression of anger or threat by avoidance and withdrawal behavior. Some women believe that the abuse is caused by a personality flaw or inadequacy in themselves (e.g., inability to keep the partner happy). These feelings of failure are reinforced and exploited by their partners. After being told repeatedly that they are \"bad,\" some women begin to believe it. Many victims were abused as children and may have poor self-esteem, poor health, post traumatic stress disorder (PTSD), depression, insomnia, low education achievement, or a history of suicide attempts, injury, or drug and alcohol abuse."
+            },
+            {
+                question: "27. A nurse is working with a victim of violence to develop a safety plan. The nurse teaches the client about the necessary items to take when leaving. The nurse determines that additional teaching is needed when the client identifies which items? Select all that apply.",
+                options: [
+                    "photo ID",
+                    "phone cards",
+                    "most of her clothing",
+                    "cash",
+                    "health insurance cards"
+                ],
+                correct: [1, 2],
+                rationale: "When leaving an abusive relationship, the victim should take the following items: driver's license or photo ID; Social Security number or green card/work permit; birth certificates for oneself and one's children; phone numbers for social services or shelter; deed or lease to the home or apartment; any court papers or orders; a change of clothing for oneself and one's children; pay stubs, checkbook, credit cards, and cash; and health insurance cards. Phone cards should not be used because they leave a trail to follow."
+            },
+            {
+                question: "28. A nurse suspects that a client is experiencing intimate partner violence and uses a screening protocol to gather additional information from the client. When asking the client direct questions, which behavior by the nurse would be appropriate to elicit accurate information? Select all that apply.",
+                options: [
+                    "Look away from the client when asking any questions.",
+                    "Avoid the use of technical language.",
+                    "Minimize what the client says.",
+                    "Use leading questions.",
+                    "Wait patiently for the client to answer."
+                ],
+                correct: [1, 4],
+                rationale: "When asking the client direct questions using the SAVE model, the nurse should maintain continuous eye contact with the client, avoid the use of technical or medical language, not dismiss or minimize what the client says, even if the client does so, use direct, to the point questions, not leading questions, and wait for each answer patiently."
+            },
+            {
+                question: "29. A nurse is working with a victim of intimate partner violence. Which intervention would be most important for this client?",
+                options: [
+                    "providing for the client's safety",
+                    "reassuring the client he or she is not alone",
+                    "documenting the violence",
+                    "educating about the cycle of violence"
+                ],
+                correct: 0,
+                rationale: "Although reassurance, documentation, and education are important for the client experiencing intimate partner violence, ensuring safety is the most important."
+            },
+            {
+                question: "30. After teaching a group of young adults about sexual violence, the nurse determines that the teaching was successful when the group identifies which acts as a type of sexual violence? Select all that apply.",
+                options: [
+                    "female genital mutilation",
+                    "bondage",
+                    "infanticide",
+                    "human trafficking",
+                    "prostitution"
+                ],
+                correct: [0, 1, 2, 3],
+                rationale: "Sexual violence includes IPV, human trafficking, incest, female genital cutting, forced prostitution, bondage, exploitation, neglect, infanticide, and sexual assault."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedOption = null;
+        let score = 0;
+        let answers = Array(questions.length).fill(null);
+        let incorrectQuestions = [];
+        let studyMode = 'all'; // 'all', 'multiple', 'single', 'incorrect'
+        let filteredQuestions = [...questions];
+
+        function setStudyMode(mode) {
+            studyMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.study-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(mode + 'Btn').classList.add('active');
+            
+            // Filter questions based on mode
+            switch(mode) {
+                case 'all':
+                    filteredQuestions = [...questions];
+                    break;
+                case 'multiple':
+                    filteredQuestions = questions.filter(q => Array.isArray(q.correct) && q.correct.length > 1);
+                    break;
+                case 'single':
+                    filteredQuestions = questions.filter(q => !Array.isArray(q.correct) || q.correct.length === 1);
+                    break;
+                case 'incorrect':
+                    filteredQuestions = questions.filter((_, index) => incorrectQuestions.includes(index));
+                    if (filteredQuestions.length === 0) {
+                        alert('No incorrect questions to review yet!');
+                        filteredQuestions = [...questions];
+                    }
+                    break;
+            }
+            
+            currentQuestion = 0;
+            loadQuestion();
+        }
+
+        function isMultipleSelectQuestion(question) {
+            return Array.isArray(question.correct) && question.correct.length > 1;
+        }
+
+        function loadQuestion() {
+            if (filteredQuestions.length === 0) {
+                document.getElementById('question').textContent = "No questions available for the selected study mode.";
+                document.getElementById('options').innerHTML = '';
+                document.getElementById('counter').textContent = `0/0`;
+                return;
+            }
+
+            const question = filteredQuestions[currentQuestion];
+            const originalIndex = questions.indexOf(question);
+            
+            document.getElementById('question').textContent = question.question;
+            document.getElementById('counter').textContent = `${currentQuestion + 1}/${filteredQuestions.length}`;
+            
+            // Update progress bar
+            const progress = ((currentQuestion + 1) / filteredQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            // Show/hide multiple select indicators
+            const isMultiple = isMultipleSelectQuestion(question);
+            document.getElementById('multipleSelectIndicator').style.display = isMultiple ? 'block' : 'none';
+            document.getElementById('multipleSelectInstructions').style.display = isMultiple ? 'block' : 'none';
+            
+            // Load options
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.innerHTML = `
+                    <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                optionElement.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Reset feedback and rationale
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('rationale').className = 'rationale';
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === filteredQuestions.length - 1 ? 'Finish ➡️' : 'Next ➡️';
+            
+            // Check if we have a stored answer for this question
+            const storedAnswer = answers[originalIndex];
+            document.getElementById('nextBtn').disabled = storedAnswer === null || storedAnswer === undefined;
+            
+            // Reset cancel button visibility
+            document.getElementById('cancelBtn').classList.remove('show');
+            
+            // If this question was already answered, show the answer
+            if (storedAnswer !== null && storedAnswer !== undefined) {
+                if (Array.isArray(storedAnswer)) {
+                    // Multiple selection question
+                    storedAnswer.forEach(index => {
+                        selectOption(index, true);
+                    });
+                } else {
+                    // Single selection question
+                    selectOption(storedAnswer, true);
+                }
+            }
+        }
+
+        function selectOption(index, fromMemory = false) {
+            const question = filteredQuestions[currentQuestion];
+            const originalIndex = questions.indexOf(question);
+            
+            // Check if this is a multiple selection question
+            if (isMultipleSelectQuestion(question)) {
+                // Multiple selection logic
+                if (!fromMemory) {
+                    if (!answers[originalIndex]) {
+                        answers[originalIndex] = [];
+                    }
+                    
+                    const optionIndex = answers[originalIndex].indexOf(index);
+                    if (optionIndex === -1) {
+                        answers[originalIndex].push(index);
+                    } else {
+                        answers[originalIndex].splice(optionIndex, 1);
+                    }
+                }
+                
+                highlightSelectedOptions();
+                showFeedbackForMultiple();
+                
+                // Enable next button if at least one option is selected
+                document.getElementById('nextBtn').disabled = !answers[originalIndex] || answers[originalIndex].length === 0;
+                return;
+            }
+            
+            // Single selection logic
+            if (selectedOption !== null && !fromMemory) return;
+            
+            if (!fromMemory) {
+                selectedOption = index;
+                answers[originalIndex] = index;
+            }
+            
+            highlightSelectedOption(index);
+            showFeedback(index);
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function highlightSelectedOption(index) {
+            const options = document.querySelectorAll('.option');
+            const question = filteredQuestions[currentQuestion];
+            const originalIndex = questions.indexOf(question);
+            
+            options.forEach((option, i) => {
+                option.classList.remove('correct', 'incorrect');
+                
+                if (i === index) {
+                    // ALWAYS show correct answers in GREEN
+                    if (i === question.correct) {
+                        option.classList.add('correct');
+                        if (!answers[originalIndex]) score++;
+                        document.getElementById('cancelBtn').classList.remove('show');
+                        
+                        // Remove from incorrect questions if it was there
+                        const incorrectIndex = incorrectQuestions.indexOf(originalIndex);
+                        if (incorrectIndex > -1) {
+                            incorrectQuestions.splice(incorrectIndex, 1);
+                        }
+                    } else {
+                        // ALWAYS show incorrect answers in RED
+                        option.classList.add('incorrect');
+                        // Also highlight the correct answer in GREEN
+                        options[question.correct].classList.add('correct');
+                        document.getElementById('cancelBtn').classList.add('show');
+                        
+                        // Add to incorrect questions
+                        if (!incorrectQuestions.includes(originalIndex)) {
+                            incorrectQuestions.push(originalIndex);
+                        }
+                    }
+                }
+            });
+        }
+
+        function highlightSelectedOptions() {
+            const options = document.querySelectorAll('.option');
+            const question = filteredQuestions[currentQuestion];
+            const originalIndex = questions.indexOf(question);
+            const selectedIndices = answers[originalIndex] || [];
+            
+            // First, highlight ALL correct answers in GREEN
+            question.correct.forEach(correctIndex => {
+                options[correctIndex].classList.add('correct');
+            });
+            
+            // Then, highlight selected options
+            options.forEach((option, i) => {
+                if (selectedIndices.includes(i)) {
+                    // If selected but incorrect, highlight in RED
+                    if (!question.correct.includes(i)) {
+                        option.classList.add('incorrect');
+                    }
+                }
+            });
+            
+            // Check if answer is correct and update score/tracking
+            const allCorrectSelected = question.correct.every(c => selectedIndices.includes(c));
+            const noIncorrectSelected = selectedIndices.every(s => question.correct.includes(s));
+            
+            if (allCorrectSelected && noIncorrectSelected) {
+                if (!answers[originalIndex]) score++;
+                // Remove from incorrect questions
+                const incorrectIndex = incorrectQuestions.indexOf(originalIndex);
+                if (incorrectIndex > -1) {
+                    incorrectQuestions.splice(incorrectIndex, 1);
+                }
+            } else {
+                // Add to incorrect questions
+                if (!incorrectQuestions.includes(originalIndex)) {
+                    incorrectQuestions.push(originalIndex);
+                }
+            }
+        }
+
+        function cancelSelection() {
+            const question = filteredQuestions[currentQuestion];
+            const originalIndex = questions.indexOf(question);
+            
+            selectedOption = null;
+            answers[originalIndex] = null;
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+            });
+            
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('rationale').classList.remove('show');
+            document.getElementById('cancelBtn').classList.remove('show');
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function showFeedback(index) {
+            const question = filteredQuestions[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackText = document.getElementById('feedbackText');
+            const rationale = document.getElementById('rationale');
+            const rationaleText = document.getElementById('rationaleText');
+            
+            if (index === question.correct) {
+                feedback.className = 'feedback correct';
+                feedbackIcon.textContent = '✅';
+                feedbackText.textContent = 'Correct! Well done.';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedbackIcon.textContent = '❌';
+                feedbackText.textContent = `Incorrect. The right answer is: ${String.fromCharCode(65 + question.correct)}`;
+            }
+            
+            feedback.style.display = 'flex';
+            rationaleText.textContent = question.rationale;
+            rationale.classList.add('show');
+        }
+
+        function showFeedbackForMultiple() {
+            const question = filteredQuestions[currentQuestion];
+            const originalIndex = questions.indexOf(question);
+            const feedback = document.getElementById('feedback');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackText = document.getElementById('feedbackText');
+            const rationale = document.getElementById('rationale');
+            const rationaleText = document.getElementById('rationaleText');
+            
+            const selectedIndices = answers[originalIndex] || [];
+            const allCorrectSelected = question.correct.every(c => selectedIndices.includes(c));
+            const noIncorrectSelected = selectedIndices.every(s => question.correct.includes(s));
+            
+            if (allCorrectSelected && noIncorrectSelected) {
+                feedback.className = 'feedback correct';
+                feedbackIcon.textContent = '✅';
+                feedbackText.textContent = 'Correct! All right answers selected.';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedbackIcon.textContent = '❌';
+                const correctLetters = question.correct.map(c => String.fromCharCode(65 + c)).join(', ');
+                feedbackText.textContent = `Incorrect. The right answers are: ${correctLetters}`;
+            }
+            
+            feedback.style.display = 'flex';
+            rationaleText.textContent = question.rationale;
+            rationale.classList.add('show');
+        }
+
+        function nextCard() {
+            if (currentQuestion < filteredQuestions.length - 1) {
+                currentQuestion++;
+                selectedOption = null;
+                loadQuestion();
+            } else {
+                const correctCount = questions.reduce((count, question, index) => {
+                    if (answers[index] === null || answers[index] === undefined) return count;
+                    
+                    if (Array.isArray(question.correct)) {
+                        const selected = answers[index] || [];
+                        const allCorrect = question.correct.every(c => selected.includes(c));
+                        const noIncorrect = selected.every(s => question.correct.includes(s));
+                        return allCorrect && noIncorrect ? count + 1 : count;
+                    } else {
+                        return answers[index] === question.correct ? count + 1 : count;
+                    }
+                }, 0);
+                
+                alert(`Quiz completed! Your score: ${correctCount}/${questions.length}\nIncorrect questions: ${incorrectQuestions.length}`);
+                
+                if (studyMode === 'incorrect' && incorrectQuestions.length > 0) {
+                    // Continue with incorrect questions
+                    filteredQuestions = questions.filter((_, index) => incorrectQuestions.includes(index));
+                    currentQuestion = 0;
+                    loadQuestion();
+                } else {
+                    // Reset to all questions
+                    currentQuestion = 0;
+                    selectedOption = null;
+                    score = 0;
+                    answers = Array(questions.length).fill(null);
+                    filteredQuestions = [...questions];
+                    setStudyMode('all');
+                }
+            }
+        }
+
+        function previousCard() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                const question = filteredQuestions[currentQuestion];
+                const originalIndex = questions.indexOf(question);
+                selectedOption = answers[originalIndex];
+                loadQuestion();
+            }
+        }
+
+        // Initialize the app
+        loadQuestion();
+    </script>
+</body>
+</html>
